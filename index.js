@@ -9,6 +9,9 @@ app.use(morgan("dev"));
 app.get("/ticketmaster/cookie", async (req, res) => {
   try {
     const response = await TicketMasterfetchCookies();
+    if (!response) {
+      return res.status(500).send("Failed to fetch cookie");
+    }
     res.status(200).send(response);
   } catch (err) {
     console.log(err);
