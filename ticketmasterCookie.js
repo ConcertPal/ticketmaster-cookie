@@ -6,7 +6,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
   let browser = null;
   try {
     browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       executablePath: "/usr/bin/chromium-browser",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
