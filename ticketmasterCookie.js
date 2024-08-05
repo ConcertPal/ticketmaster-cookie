@@ -21,6 +21,7 @@ const config = {
 };
 
 let ticketMasterCookie = null;
+var browser = await puppeteer.launch(config);
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -28,7 +29,6 @@ async function sleep(ms) {
 
 const TicketMasterfetchCookies = async (retries = 10) => {
   try {
-    var browser = await puppeteer.launch(config);
     console.log("Browser launched");
     return new Promise(async (resolve, reject) => {
       console.time("cookie");
@@ -56,16 +56,20 @@ const TicketMasterfetchCookies = async (retries = 10) => {
               page.removeAllListeners("request");
               await page.close();
               await browser.close();
+              console.log("Browser closed");
               resolve(ticketMasterCookie);
               
             }
           }
         } catch (error) {
           //supress
+          console.log(error);
         }
       });
     });
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export { TicketMasterfetchCookies, ticketMasterCookie };
