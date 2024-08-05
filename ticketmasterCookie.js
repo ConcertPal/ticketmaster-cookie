@@ -55,7 +55,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
               console.timeEnd("cookie");
               page.removeAllListeners("request");
               await page.close();
-              await browser.close();
+              // await browser.close();
               console.log("Browser closed");
               resolve(ticketMasterCookie);
               
