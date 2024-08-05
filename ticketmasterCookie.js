@@ -56,6 +56,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
               page.removeAllListeners("request");
               resolve(ticketMasterCookie);
               await page.close();
+              await browser.close();
             }
           }
         } catch (error) {
