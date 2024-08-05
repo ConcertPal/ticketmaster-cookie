@@ -3,12 +3,6 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 puppeteer.use(StealthPlugin());
 
-let ticketMasterCookie = null;
-
-async function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const proxy = {
   host: "geo.iproyal.com",
   port: "12321",
@@ -16,68 +10,69 @@ const proxy = {
   password: "spotconcertcal",
 };
 
+let browser = await puppeteer.launch({
+  headless: false,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    // `--proxy-server=${proxy.host}:${proxy.port}`,
+  ],
+});
+
+let ticketMasterCookie = null;
+
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const TicketMasterfetchCookies = async (retries = 10) => {
-  let browser = null;
-
   try {
-    browser = await puppeteer.launch({
-      headless: true,
-      executablePath: "/usr/bin/chromium-browser",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        `--proxy-server=${proxy.host}:${proxy.port}`,
-      ],
-    });
-
-    const page = await browser.newPage();
-
-    await page.authenticate({
-      username: proxy.username,
-      password: proxy.password,
-    });
-
-    const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
-
-    // Set a timeout for the page navigation
-    const navigationPromise = page.goto(url, { waitUntil: "networkidle2" });
-
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 60000)
-    ); // 60 seconds timeout
-
-    await Promise.race([navigationPromise, timeout]);
-
-    await sleep(4000);
-
-    const cookies = await page.cookies();
-    const reese84 = cookies.find((c) => c.name === "reese84");
-
-    if (!reese84?.value) {
-      throw new Error("Cookie not found");
+    if (!browser) {
+      browser = await puppeteer.launch({
+        headless: false,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          // `--proxy-server=${proxy.host}:${proxy.port}`,
+        ],
+      });
     }
-    await browser.close();
+    return new Promise(async (resolve, reject) => {
+      console.time("cookie");
+      const page = await browser.newPage();
 
-    ticketMasterCookie = reese84?.value;
+      await page.authenticate({
+        username: proxy.username,
+        password: proxy.password,
+      });
 
-    return ticketMasterCookie;
+      const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
+      page.goto(url, {
+        timeout: 0,
+      });
+
+      page.on("request", async (r) => {
+        try {
+          const cookies = await page.cookies();
+          // getting reese84
+          for (let cookie in cookies) {
+            cookie = cookies[cookie];
+            if (cookie.name === "reese84") {
+              ticketMasterCookie = cookie.value;
+              console.timeEnd("cookie");
+              page.removeAllListeners("request");
+              resolve(ticketMasterCookie);
+              await page.close();
+            }
+          }
+        } catch (error) {
+          //supress
+        }
+      });
+    });
+    
   } catch (err) {
-    console.log(err);
-    if (browser) {
-      await browser.close();
-    }
-
-    // Retry logic
-    if (retries > 0) {
-      console.warn(
-        `COOKIE | TICKETMASTER | FAILURE | COOKIE FETCHING | Retrying... (${retries} retries left)`
-      );
-      await TicketMasterfetchCookies(retries - 1);
-    } else {
-      console.error(
-        "COOKIE | TICKETMASTER | Max retries reached. Could not fetch cookies."
-      );
-    }
+ 
   }
 };
 
