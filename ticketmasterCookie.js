@@ -4,20 +4,21 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 
 const proxy = {
-  host: "geo.iproyal.com",
-  port: "12321",
-  username: "9AOJ3CyVgpOJNQnr",
-  password: "spotconcertcal",
+  host: "proxy.packetstream.io",
+  port: "31112",
+  username: "gurbinder8727",
+  password: "as3Yf3Mg4WsSStDv_country-India",
 };
 
-let browser = await puppeteer.launch({
+const config = {
   headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    // `--proxy-server=${proxy.host}:${proxy.port}`,
+    `--proxy-server=${proxy.host}:${proxy.port}`,
   ],
-});
+  // executablePath: "/usr/bin/chromium-browser",
+};
 
 let ticketMasterCookie = null;
 
@@ -27,16 +28,8 @@ async function sleep(ms) {
 
 const TicketMasterfetchCookies = async (retries = 10) => {
   try {
-    if (!browser) {
-      browser = await puppeteer.launch({
-        headless: false,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          // `--proxy-server=${proxy.host}:${proxy.port}`,
-        ],
-      });
-    }
+    var browser = await puppeteer.launch(config);
+
     return new Promise(async (resolve, reject) => {
       console.time("cookie");
       const page = await browser.newPage();
@@ -70,10 +63,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         }
       });
     });
-    
-  } catch (err) {
- 
-  }
+  } catch (err) {}
 };
 
 export { TicketMasterfetchCookies, ticketMasterCookie };
