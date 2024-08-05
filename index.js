@@ -7,6 +7,7 @@ express(cors());
 
 app.use(morgan("dev"));
 app.get("/ticketmaster/cookie", async (req, res) => {
+  console.log("Request received");
   try {
     const response = await TicketMasterfetchCookies();
     if (!response) {

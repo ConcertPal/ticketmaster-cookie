@@ -29,7 +29,7 @@ async function sleep(ms) {
 const TicketMasterfetchCookies = async (retries = 10) => {
   try {
     var browser = await puppeteer.launch(config);
-
+    console.log("Browser launched");
     return new Promise(async (resolve, reject) => {
       console.time("cookie");
       const page = await browser.newPage();
