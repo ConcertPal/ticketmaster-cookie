@@ -11,11 +11,11 @@ const proxy = {
 };
 
 const config = {
-  headless: false,
+  headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    `--proxy-server=${proxy.host}:${proxy.port}`,
+    // `--proxy-server=${proxy.host}:${proxy.port}`,
   ],
   // executablePath: "/usr/bin/chromium-browser",
 };
@@ -34,10 +34,10 @@ const TicketMasterfetchCookies = async (retries = 10) => {
       console.time("cookie");
       const page = await browser.newPage();
 
-      await page.authenticate({
-        username: proxy.username,
-        password: proxy.password,
-      });
+      // await page.authenticate({
+      //   username: proxy.username,
+      //   password: proxy.password,
+      // });
 
       const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
       page.goto(url, {
