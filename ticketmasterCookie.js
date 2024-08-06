@@ -55,21 +55,22 @@ const TicketMasterfetchCookies = async (retries = 10) => {
               ticketMasterCookie = cookie.value;
               console.timeEnd("cookie");
               page.removeAllListeners("request");
-              await page.close();
               newCookie = ticketMasterCookie;
-              resolve(ticketMasterCookie);
+
+              await page.close();
+              await browser.close();
             }
           }
-          // await browser.close();
-          return newCookie;
         } catch (error) {
-          //supress
-
           console.log(error);
+
+          return newCookie;
         }
       });
     });
   } catch (err) {
+    return newCookie;
+
     console.log(err);
   }
 };
