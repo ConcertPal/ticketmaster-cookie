@@ -65,6 +65,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
           //supress
 
           console.log(error);
+          console.log("Error in request");
         }
       });
     });
