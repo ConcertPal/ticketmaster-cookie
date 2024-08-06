@@ -21,7 +21,6 @@ const config = {
 };
 
 let ticketMasterCookie = null;
-var browser = await puppeteer.launch(config);
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,6 +29,7 @@ async function sleep(ms) {
 const TicketMasterfetchCookies = async (retries = 10) => {
   try {
     console.log("Browser launched");
+    var browser = await puppeteer.launch(config);
     return new Promise(async (resolve, reject) => {
       console.time("cookie");
       const page = await browser.newPage();
