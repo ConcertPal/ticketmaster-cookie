@@ -4,10 +4,10 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 
 const proxy = {
-  host: "proxy.packetstream.io",
-  port: "31112",
-  username: "gurbinder8727",
-  password: "as3Yf3Mg4WsSStDv_country-India",
+  host: "geo.iproyal.com",
+  port: "12321",
+  username: "9AOJ3CyVgpOJNQnr",
+  password: "spotconcertcal",
 };
 
 const config = {
@@ -15,9 +15,9 @@ const config = {
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    // `--proxy-server=${proxy.host}:${proxy.port}`,
+    `--proxy-server=${proxy.host}:${proxy.port}`,
   ],
-  // executablePath: "/usr/bin/chromium-browser",
+  executablePath: "/usr/bin/chromium-browser",
 };
 
 let ticketMasterCookie = null;
@@ -34,10 +34,10 @@ const TicketMasterfetchCookies = async (retries = 10) => {
       console.time("cookie");
       const page = await browser.newPage();
 
-      // await page.authenticate({
-      //   username: proxy.username,
-      //   password: proxy.password,
-      // });
+      await page.authenticate({
+        username: proxy.username,
+        password: proxy.password,
+      });
 
       const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
       page.goto(url, {
@@ -58,7 +58,6 @@ const TicketMasterfetchCookies = async (retries = 10) => {
               // await browser.close();
               console.log("Browser closed");
               resolve(ticketMasterCookie);
-              
             }
           }
         } catch (error) {
