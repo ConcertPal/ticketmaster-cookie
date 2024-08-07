@@ -36,6 +36,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
 
       await page.goto("https://www.ticketmaster.com/event/Z7r9jZ1A7F--O", {
         waitUntil: "networkidle2",
+        timeout: 0,
       });
 
       const cookiePromise = new Promise((resolve) => {
