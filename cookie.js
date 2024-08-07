@@ -4,29 +4,33 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 
 const proxy = {
-  host: "geo.iproyal.com",
-  port: "12321",
-  username: "9AOJ3CyVgpOJNQnr",
-  password: "spotconcertcal",
+  host: "proxy.packetstream.io",
+  port: "31112",
+  username: "gurbinder8727",
+  password: "as3Yf3Mg4WsSStDv_country-India",
 };
 
 const config = {
-  headless: false,
+  headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
     `--proxy-server=${proxy.host}:${proxy.port}`,
   ],
+  //executablePath: "/usr/bin/chromium-browser",
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+let browser = await puppeteer.launch(config);
+
+let ticketMasterCookie = null;
 
 const TicketMasterfetchCookies = async (retries = 10) => {
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      const browser = await puppeteer.launch(config);
+  try {
+    if (!browser) {
+      browser = await puppeteer.launch(config);
+    }
+    return new Promise(async (resolve, reject) => {
+      console.time("cookie");
       const page = await browser.newPage();
 
       await page.authenticate({
@@ -34,43 +38,35 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         password: proxy.password,
       });
 
-      await page.goto("https://www.ticketmaster.com/event/Z7r9jZ1A7F--O", {
-        waitUntil: "networkidle2",
-        timeout: 0,
-      });
+      const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
+      page
+        .goto(url, { timeout: 0 })
+        .then(() => {})
+        .catch(() => {});
 
-      const cookiePromise = new Promise((resolve) => {
-        page.on("response", async () => {
+      page.on("request", async (r) => {
+        try {
           const cookies = await page.cookies();
-          for (const cookie of cookies) {
+          // getting reese84
+          for (let cookie in cookies) {
+            cookie = cookies[cookie];
             if (cookie.name === "reese84") {
+              ticketMasterCookie = cookie.value;
+              console.timeEnd("cookie");
+              page.removeAllListeners("request");
+              resolve(ticketMasterCookie);
               await browser.close();
-              resolve(cookie.value);
-              return;
             }
           }
-        });
-
-        setTimeout(() => {
-          resolve(null);
-        }, 30000);
+        } catch (error) {
+          //supress
+        }
       });
-
-      const ticketMasterCookie = await cookiePromise;
-
-      if (ticketMasterCookie) {
-        return ticketMasterCookie;
-      }
-    } catch (error) {
-      console.error(`Error during attempt ${attempt + 1}:`, error);
-      await sleep(2000);
-    }
-  }
-
-  return null;
+    });
+  } catch (err) {}
 };
 
-let time = Date.now();
-TicketMasterfetchCookies(1).then((res) =>
-  console.log("Result:", res, `\nTime: ${Date.now() - time}ms`)
-);
+TicketMasterfetchCookies().then((cookie) => {
+  console.log("Cookie fetched", cookie);
+});
+export { TicketMasterfetchCookies, ticketMasterCookie };
