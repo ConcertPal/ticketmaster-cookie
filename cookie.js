@@ -11,7 +11,7 @@ const proxy = {
 };
 
 const config = {
-  headless: true,
+  headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -19,35 +19,57 @@ const config = {
   ],
 };
 
-export const TicketMasterfetchCookies = async () => {
-  const browser = await puppeteer.launch(config);
-  const page = await browser.newPage();
-  let reese84Cookie = null;
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  try {
-    await page.authenticate({
-      username: proxy.username,
-      password: proxy.password,
-    });
+const TicketMasterfetchCookies = async (retries = 10) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const browser = await puppeteer.launch(config);
+      const page = await browser.newPage();
 
-    await page.goto("https://www.ticketmaster.com/event/Z7r9jZ1A7F--O", {
-      waitUntil: "networkidle2",
-    });
+      await page.authenticate({
+        username: proxy.username,
+        password: proxy.password,
+      });
 
-    const cookies = await page.cookies();
-    const cookie = cookies.find((c) => c.name === "reese84");
+      await page.goto("https://www.ticketmaster.com/event/Z7r9jZ1A7F--O", {
+        waitUntil: "networkidle2",
+      });
 
-    reese84Cookie = cookie?.value;
-  } catch (error) {
-    console.error("Error encountered:", error);
-  } finally {
-    await browser.close();
+      const cookiePromise = new Promise((resolve) => {
+        page.on("response", async () => {
+          const cookies = await page.cookies();
+          for (const cookie of cookies) {
+            if (cookie.name === "reese84") {
+              await browser.close();
+              resolve(cookie.value);
+              return;
+            }
+          }
+        });
+
+        setTimeout(() => {
+          resolve(null);
+        }, 30000);
+      });
+
+      const ticketMasterCookie = await cookiePromise;
+
+      if (ticketMasterCookie) {
+        return ticketMasterCookie;
+      }
+    } catch (error) {
+      console.error(`Error during attempt ${attempt + 1}:`, error);
+      await sleep(2000);
+    }
   }
 
-  return reese84Cookie;
+  return null;
 };
 
-// const start = Date.now();
-// TicketMasterfetchCookies().then((res) =>
-//   console.log("Result:", res, `\nTime: ${Date.now() - start}ms`)
-// );
+let time = Date.now();
+TicketMasterfetchCookies(1).then((res) =>
+  console.log("Result:", res, `\nTime: ${Date.now() - time}ms`)
+);
