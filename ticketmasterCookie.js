@@ -44,7 +44,7 @@ let ticketMasterCookie = null;
 const TicketMasterfetchCookies = async (retries = 10) => {
   for (let i = 0; i < retries; i++) {
     try {
-      console.log("hi");
+      console.log(`Attempt ${i + 1}`);
       await launchBrowser();
       const page = await browser.newPage();
 
@@ -71,7 +71,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
       await page.close();
     } catch (error) {
       console.error(`Attempt ${i + 1} failed:`, error);
-      await sleep(1000); // wait 1 second before retrying
+      await sleep(1000);
     }
   }
   throw new Error(
@@ -79,16 +79,15 @@ const TicketMasterfetchCookies = async (retries = 10) => {
   );
 };
 
-// Example usage
-(async () => {
-  try {
-    const cookie = await TicketMasterfetchCookies();
-    console.log("Fetched cookie:", cookie);
-  } catch (error) {
-    console.error("Failed to fetch the cookie:", error);
-  } finally {
-    await closeBrowser();
-  }
-})();
+// (async () => {
+//   try {
+//     const cookie = await TicketMasterfetchCookies();
+//     console.log("Fetched cookie:", cookie);
+//   } catch (error) {
+//     console.error("Failed to fetch the cookie:", error);
+//   } finally {
+//     await closeBrowser();
+//   }
+// })();
 
 export { TicketMasterfetchCookies, ticketMasterCookie };
