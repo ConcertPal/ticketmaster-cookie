@@ -20,8 +20,7 @@ const config = {
   //executablePath: "/usr/bin/chromium-browser",
 };
 
-let browser = await puppeteer.launch(config);
-
+let browser;
 let ticketMasterCookie = null;
 
 const TicketMasterfetchCookies = async (retries = 10) => {
@@ -39,7 +38,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
       });
 
       const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
-      page
+      await page
         .goto(url, { timeout: 0 })
         .then(() => {})
         .catch(() => {});
@@ -66,7 +65,4 @@ const TicketMasterfetchCookies = async (retries = 10) => {
   } catch (err) {}
 };
 
-TicketMasterfetchCookies().then((cookie) => {
-  console.log("Cookie fetched", cookie);
-});
 export { TicketMasterfetchCookies, ticketMasterCookie };
