@@ -11,7 +11,7 @@ const proxy = {
 };
 
 const config = {
-  headless: true,
+  headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -42,41 +42,51 @@ async function sleep(ms) {
 let ticketMasterCookie = null;
 
 const TicketMasterfetchCookies = async (retries = 10) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      console.log(`Attempt ${i + 1}`);
-      await launchBrowser();
-      const page = await browser.newPage();
+  try {
+    for (let i = 0; i < retries; i++) {
+      try {
+        console.log(`Attempt ${i + 1}`);
 
-      await page.authenticate({
-        username: proxy.username,
-        password: proxy.password,
-      });
-
-      const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
-      await page.goto(url, {
-        waitUntil: "networkidle2",
-        timeout: 60000, // 60 seconds timeout
-      });
-
-      const cookies = await page.cookies();
-      for (const cookie of cookies) {
-        if (cookie.name === "reese84") {
-          ticketMasterCookie = cookie.value;
-          await page.close();
-          return ticketMasterCookie;
+        if (!browser) {
+          await launchBrowser();
         }
-      }
+        await launchBrowser();
+        const page = await browser.newPage();
 
-      await page.close();
-    } catch (error) {
-      console.error(`Attempt ${i + 1} failed:`, error);
-      await sleep(1000);
+        await page.authenticate({
+          username: proxy.username,
+          password: proxy.password,
+        });
+
+        const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
+        await page.goto(url, {
+          waitUntil: "networkidle2",
+          timeout: 60000, // 60 seconds timeout
+        });
+
+        const cookies = await page.cookies();
+        for (const cookie of cookies) {
+          if (cookie.name === "reese84") {
+            ticketMasterCookie = cookie.value;
+            await page.close();
+            return ticketMasterCookie;
+          }
+        }
+
+        await page.close();
+      } catch (error) {
+        console.error(`Attempt ${i + 1} failed:`, error);
+        await sleep(1000);
+      }
     }
+    throw new Error(
+      "Failed to fetch the TicketMaster cookie after multiple attempts"
+    );
+  } catch (err) {
+    console.log(err);
+  } finally {
+    await closeBrowser();
   }
-  throw new Error(
-    "Failed to fetch the TicketMaster cookie after multiple attempts"
-  );
 };
 
 // (async () => {
