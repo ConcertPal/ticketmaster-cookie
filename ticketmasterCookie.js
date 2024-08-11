@@ -11,7 +11,7 @@ const proxy = {
 };
 
 const config = {
-  headless: true,
+  headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -58,13 +58,14 @@ const TicketMasterfetchCookies = async (retries = 10) => {
           password: proxy.password,
         });
 
-        const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
+        const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7u9-M";
         await page.goto(url, {
           waitUntil: "networkidle2",
           timeout: 60000, // 60 seconds timeout
         });
 
         const cookies = await page.cookies();
+        console.log(cookies);
         for (const cookie of cookies) {
           if (cookie.name === "reese84") {
             ticketMasterCookie = cookie.value;
@@ -74,9 +75,11 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         }
 
         await page.close();
+        await closeBrowser();
       } catch (error) {
         console.error(`Attempt ${i + 1} failed:`, error);
         await sleep(1000);
+        await closeBrowser();
       }
     }
     throw new Error(
