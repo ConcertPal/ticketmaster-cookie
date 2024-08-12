@@ -45,6 +45,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
   try {
     for (let i = 0; i < retries; i++) {
       try {
+        await closeBrowser();
         console.log(`Attempt ${i + 1}`);
 
         if (!browser) {
@@ -77,9 +78,9 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         await page.close();
         await closeBrowser();
       } catch (error) {
+        await closeBrowser();
         console.error(`Attempt ${i + 1} failed:`, error);
         await sleep(1000);
-        await closeBrowser();
       }
     }
     throw new Error(
