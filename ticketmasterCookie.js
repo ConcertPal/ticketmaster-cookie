@@ -51,7 +51,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         if (!browser) {
           await launchBrowser();
         }
-        await launchBrowser();
+
         const page = await browser.newPage();
 
         await page.authenticate({
