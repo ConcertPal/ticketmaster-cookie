@@ -65,7 +65,6 @@ const TicketMasterfetchCookies = async (retries = 10) => {
         });
 
         const cookies = await page.cookies();
-        console.log(cookies);
         for (const cookie of cookies) {
           if (cookie.name === "reese84") {
             ticketMasterCookie = cookie.value;
