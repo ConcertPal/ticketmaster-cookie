@@ -58,11 +58,10 @@ const TicketMasterfetchCookies = async (retries = 10) => {
           username: proxy.username,
           password: proxy.password,
         });
-        throw new Error("Failed to fetch the cookie");
         const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7u9-M";
         await page.goto(url, {
           waitUntil: "networkidle2",
-          timeout: 60000, // 60 seconds timeout
+          timeout: 60000,
         });
 
         const cookies = await page.cookies();
