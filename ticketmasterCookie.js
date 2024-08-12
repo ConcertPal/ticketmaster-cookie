@@ -69,6 +69,7 @@ const TicketMasterfetchCookies = async (retries = 10) => {
           if (cookie.name === "reese84") {
             ticketMasterCookie = cookie.value;
             await page.close();
+            await closeBrowser();
             return ticketMasterCookie;
           }
         }
