@@ -4,14 +4,14 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 
 const proxy = {
-  host: "proxy.packetstream.io",
-  port: "31112",
-  username: "gurbinder8727",
-  password: "as3Yf3Mg4WsSStDv_country-India",
+  host: "geo.iproyal.com",
+  port: "12321",
+  username: "9AOJ3CyVgpOJNQnr",
+  password: "spotconcertcal",
 };
 
 const config = {
-  headless: true,
+  headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -20,87 +20,47 @@ const config = {
   executablePath: "/usr/bin/chromium-browser",
 };
 
-let browser;
-
-async function launchBrowser() {
-  if (!browser) {
-    browser = await puppeteer.launch(config);
-  }
-}
-
-async function closeBrowser() {
-  if (browser) {
-    await browser.close();
-    browser = null;
-  }
-}
-
-async function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 let ticketMasterCookie = null;
 
 const TicketMasterfetchCookies = async (retries = 10) => {
-  try {
-    for (let i = 0; i < retries; i++) {
-      try {
-        await closeBrowser();
-        console.log(`Attempt ${i + 1}`);
+  return new Promise(async (resolve, reject) => {
+    const browser = await puppeteer.launch(config);
+    try {
+      const page = await browser.newPage();
 
-        if (!browser) {
-          await launchBrowser();
-        }
+      await page.authenticate({
+        username: proxy.username,
+        password: proxy.password,
+      });
 
-        const page = await browser.newPage();
+      const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
 
-        await page.authenticate({
-          username: proxy.username,
-          password: proxy.password,
-        });
-        const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7u9-M";
-        await page.goto(url, {
-          waitUntil: "networkidle2",
-          timeout: 60000,
-        });
-
+      page.on("request", async (r) => {
         const cookies = await page.cookies();
-        for (const cookie of cookies) {
+        // getting reese84
+        for (let cookie in cookies) {
+          cookie = cookies[cookie];
           if (cookie.name === "reese84") {
             ticketMasterCookie = cookie.value;
-            await page.close();
-            await closeBrowser();
-            return ticketMasterCookie;
+            await browser.close();
+            resolve(ticketMasterCookie);
           }
         }
+      });
 
-        await page.close();
-        await closeBrowser();
-      } catch (error) {
-        await closeBrowser();
-        console.error(`Attempt ${i + 1} failed:`, error);
-        await sleep(1000);
-      }
+      page
+        .goto(url, {
+          timeout: 0,
+        })
+        .catch(async () => {
+          await browser.close();
+          resolve(ticketMasterCookie);
+        });
+    } catch (err) {
+      await browser.close();
+      return newCookie;
     }
-    throw new Error(
-      "Failed to fetch the TicketMaster cookie after multiple attempts"
-    );
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await closeBrowser();
-  }
+  });
 };
-
-// (async () => {
-//   try {
-//     const cookie = await TicketMasterfetchCookies();
-//     console.log("Fetched cookie:", cookie);
-//   } catch (error) {
-//     console.error("Failed to fetch the cookie:", error);
-//   } finally {
-//     await closeBrowser();
-//   }
-// })();
 
 export { TicketMasterfetchCookies, ticketMasterCookie };
