@@ -7,7 +7,7 @@ const proxy = {
   host: "geo.iproyal.com",
   port: "12321",
   username: "9AOJ3CyVgpOJNQnr",
-  password: "spotconcertcal",
+  password: "hellospotca12_country-us",
 };
 
 const config = {
