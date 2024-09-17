@@ -7,7 +7,7 @@ const proxy = {
   host: "geo.iproyal.com",
   port: "12321",
   username: process.env.PROXY_USERNAME,
-  password: PROXY_PASSWORD,
+  password: process.env.PROXY_PASSWORD,
 };
 
 const config = {
