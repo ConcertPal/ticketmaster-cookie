@@ -6,8 +6,8 @@ puppeteer.use(StealthPlugin());
 const proxy = {
   host: "geo.iproyal.com",
   port: "12321",
-  username: "9AOJ3CyVgpOJNQnr",
-  password: "hellospotca12_country-us",
+  username: process.env.PROXY_USERNAME,
+  password: PROXY_PASSWORD,
 };
 
 const config = {

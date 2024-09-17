@@ -2,6 +2,7 @@ import cors from "cors";
 import { TicketMasterfetchCookies } from "./ticketmasterCookie.js";
 import express from "express";
 import morgan from "morgan";
+import "dotenv/config";
 const app = express();
 express(cors());
 
