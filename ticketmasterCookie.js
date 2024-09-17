@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-
+import "dotenv/config";
 puppeteer.use(StealthPlugin());
 
+console.log(process.env.PROXY_PASSWORD, process.env.PROXY_USERNAME);
 const proxy = {
   host: "geo.iproyal.com",
   port: "12321",
