@@ -12,7 +12,7 @@ console.log(process.env.PROXY_PASSWORD, process.env.PROXY_USERNAME);
 // };
 
 const config = {
-  headless: false,
+  headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
