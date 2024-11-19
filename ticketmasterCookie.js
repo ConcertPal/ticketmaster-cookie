@@ -12,7 +12,7 @@ console.log(process.env.PROXY_PASSWORD, process.env.PROXY_USERNAME);
 // };
 
 const config = {
-  headless: true,
+  headless: false,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -34,14 +34,14 @@ const TicketMasterfetchCookies = async (retries = 10) => {
       //   password: proxy.password,
       // });
 
-      const url = "https://www.ticketmaster.com/event/Z7r9jZ1A7F--O";
+      const url =
+        "https://www.ticketmaster.com/don-toliver-psycho-tour-saint-louis-missouri-11-19-2024/event/060060D4FE5B9E64";
 
       page.on("request", async (r) => {
         const cookies = await page.cookies();
-        // getting reese84
         for (let cookie in cookies) {
           cookie = cookies[cookie];
-          if (cookie.name === "reese84") {
+          if (cookie.name === "tmpt") {
             ticketMasterCookie = cookie.value;
             await browser.close();
             resolve(ticketMasterCookie);
