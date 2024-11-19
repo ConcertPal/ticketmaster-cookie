@@ -4,19 +4,19 @@ import "dotenv/config";
 puppeteer.use(StealthPlugin());
 
 console.log(process.env.PROXY_PASSWORD, process.env.PROXY_USERNAME);
-// const proxy = {
-//   host: "geo.iproyal.com",
-//   port: "12321",
-//   username: process.env.PROXY_USERNAME,
-//   password: process.env.PROXY_PASSWORD,
-// };
+const proxy = {
+  host: "geo.iproyal.com",
+  port: "12321",
+  username: process.env.PROXY_USERNAME,
+  password: process.env.PROXY_PASSWORD,
+};
 
 const config = {
   headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    // `--proxy-server=${proxy.host}:${proxy.port}`,
+    `--proxy-server=${proxy.host}:${proxy.port}`,
   ],
   executablePath: "/usr/bin/chromium-browser",
 };
@@ -29,10 +29,10 @@ const TicketMasterfetchCookies = async (retries = 10) => {
     try {
       const page = await browser.newPage();
 
-      // await page.authenticate({
-      //   username: proxy.username,
-      //   password: proxy.password,
-      // });
+      await page.authenticate({
+        username: proxy.username,
+        password: proxy.password,
+      });
 
       const url =
         "https://www.ticketmaster.com/don-toliver-psycho-tour-saint-louis-missouri-11-19-2024/event/060060D4FE5B9E64";
